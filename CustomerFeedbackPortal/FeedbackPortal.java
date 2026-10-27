@@ -10,13 +10,21 @@ public class FeedbackPortal{
 
     //track how many feedbacks have been added
     int feedbackCount = 0;
-
-
     
 
-    static void showMenue (int choice){
+    static void showMenue (){
         boolean exit = false;
         while (exit == false){
+            System.out.println("=====CUSTOMER FEEDBACK PORTAL=====");
+            System.out.println("1. Add Feedback");
+            System.out.println("2. Show All Feedback");
+            System.out.println("3. Show Average Rating");
+            System.out.println("4. Search by Rating");
+            System.out.println("5. Delete Feedback");
+            System.out.println("6. Save Feedback to File");
+            System.out.println("7. Save and Exit");
+            System.out.print("Choose: ");
+            int choice = sc.nextInt();
             switch (choice) {
                 case 1:
                     addFeedback();
@@ -68,9 +76,8 @@ public class FeedbackPortal{
     }
     
     public static void main (String [] args){
-        System.out.println("=====CUSTOMER FEEDBACK PORTAL=====");
-        int choice = sc.nextInt();
-        showMenue(choice);
+        showMenue();
+        
 
     }
 }
