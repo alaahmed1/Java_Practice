@@ -44,13 +44,12 @@ public class FeedbackPortal{
                 case 2:
                     showAllFeedback();
                     break;
-
-                // case 3:
-                //     showAverageRating();
-                //     break;
-                // case 4:
-                //     searchByRating();
-                //     break;
+                case 3:
+                    showAverageRating();
+                    break;
+                case 4:
+                    searchByRating();
+                    break;
                 // case 5:
                 //     deleteFeedback();
                 //     break;
@@ -137,7 +136,87 @@ public class FeedbackPortal{
         }
     }
 
-   
+   static void showAverageRating(){
+        if (feedbackCount == 0) {
+            System.out.println("No feedback available to calculate average rating.");
+            return;
+        }
+        int sum = 0;
+        for (int i = 0; i < feedbackCount; i++) {
+            sum += ratings[i]; // Add the rating to the sum
+        }
+        double average = (double) sum / feedbackCount;
+        System.out.printf("Average Rating: %.2f\n", average); // Print the average rating with 2 decimal places
+    }
+
+    static void searchByRating(){
+        if (feedbackCount == 0) {
+            System.out.println("No feedback available to search.");
+            return;
+        }
+        int searchRating;
+        while (true) {
+            System.out.println("Enter the rating to search for (1-5): ");
+            try {
+                searchRating = sc.nextInt();
+                if (searchRating >= 1 && searchRating <= 5) {
+                    break;   // Valid rating
+                } else {
+                    System.out.println("Rating must be between 1 and 5. Please try again.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a whole number from 1 to 5.");
+                sc.nextLine(); // Clear the invalid input
+            }
+        }
+
+        boolean found = false; // incase no feedback is found with the given rating
+        System.out.println("=====FEEDBACK WITH RATING " + searchRating + "=====");
+        for (int i = 0; i < feedbackCount; i++) {
+            if (ratings[i] == searchRating) {
+                System.out.println("Customer Name: " + names[i]);
+                System.out.println("Comment: " + comments[i]);
+                System.out.println("-----------------------");
+                found = true; 
+            }
+        }
+        if (found == false) {
+            System.out.println("No feedback found with rating " + searchRating + ".");
+        }
+    }   
+
+    static void deleteFeedback(){
+        if (feedbackCount == 0) {
+            System.out.println("No feedback available to delete.");
+            return;
+        }
+        int deleteIndex;
+        while (true) {
+            System.out.println("Enter the index of the feedback to delete (0 to " + (feedbackCount - 1) + "): ");
+            try {
+                deleteIndex = sc.nextInt();
+                if (deleteIndex >= 0 && deleteIndex < feedbackCount) { //range check
+                    break; // Valid index
+                } else {
+                    System.out.println("Index must be between 0 and " + (feedbackCount - 1) + ". Please try again.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a whole number.");
+                sc.nextLine(); // Clear the invalid input
+            }
+        }
+
+        /* since we can't actually delete an element from an array,
+         we will shift all feedbacks after the deleted one to the left by one position */
+        for (int i = deleteIndex; i < feedbackCount - 1; i++) {
+            names[i] = names[i + 1];  // the data will be overwritten by the next feedback 
+            ratings[i] = ratings[i + 1];
+            comments[i] = comments[i + 1];
+        }
+        feedbackCount--; // Decrease the count of feedbacks 
+        System.out.println("Feedback deleted successfully!");
+    }
+
 
     public static void main (String [] args){
         while(exitFlag == false){
