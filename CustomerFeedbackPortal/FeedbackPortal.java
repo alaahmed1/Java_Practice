@@ -41,9 +41,9 @@ public class FeedbackPortal{
                 case 1:
                     addFeedback();
                     break;
-                // case 2:
-                //     showAllFeedback();
-                //     break;
+                case 2:
+                    showAllFeedback();
+                    break;
 
                 // case 3:
                 //     showAverageRating();
@@ -123,6 +123,22 @@ public class FeedbackPortal{
         System.out.println("Feedback added successfully!"); 
     }
    
+    static void showAllFeedback(){
+        if (feedbackCount == 0) {
+            System.out.println("No feedback available.");
+            return;
+        }
+        System.out.println("=====ALL FEEDBACK=====");
+        for (int i = 0; i < feedbackCount; i++) { // Loop through only the number of feedbacks that have been added
+            System.out.println("Customer Name: " + names[i]);
+            System.out.println("Rating: " + ratings[i]);
+            System.out.println("Comment: " + comments[i]);
+            System.out.println("-----------------------");
+        }
+    }
+
+   
+
     public static void main (String [] args){
         while(exitFlag == false){
             showMenue();
