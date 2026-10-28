@@ -1,8 +1,9 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
-// import java.io.FileNotFoundException;
-// import java.util.InputMismatchException;
-// import java.util.BufferedReader;
-// import java.io.FileReader;
 
 public class FeedbackPortal{
     static Scanner sc = new Scanner(System.in);
@@ -26,15 +27,17 @@ public class FeedbackPortal{
             System.out.println("2. Show All Feedback");
             System.out.println("3. Show Average Rating");
             System.out.println("4. Search by Rating");
-            System.out.println("5. Delete Feedback");
-            System.out.println("6. Save Feedback to File");
-            System.out.println("7. Save and Exit");
+            System.out.println("5. Search by Name");
+            System.out.println("6. Delete Feedback");
+            System.out.println("7. Save Feedback to File");
+            System.out.println("8. Save and Exit");
+            System.out.println("9. Show Highest and Lowest Rating");
             try {
                 System.out.print("Choose: ");
-                 choice = sc.nextInt();
+                 choice = sc.nextInt();  // Read the user's choice as an integer
+                 sc.nextLine(); // Consume the newline character left by nextInt()
             } catch (Exception e) {
                 System.out.println("Invalid input. Please enter a number between 1 and 7.");
-                sc.nextLine(); // Clear the invalid input
                 return; // Exit the method to show the menu again
             }
             switch (choice) {
@@ -50,17 +53,23 @@ public class FeedbackPortal{
                 case 4:
                     searchByRating();
                     break;
-                // case 5:
-                //     deleteFeedback();
-                //     break;
-                // case 6:
-                //     SaveFeedbackToFile();
-                //     break;
-                //case 7:
-                    //exitFlag = true;
-                //     SaveFeedbackToFile();
-                    //break;
-            
+                case 5:
+                    searchByName();
+                    break;
+                case 6:
+                    deleteFeedback();
+                    break;
+                case 7:
+                    SaveFeedbackToFile();
+                    break;
+                case 8:
+                    exitFlag = true;
+                    SaveFeedbackToFile();
+                    break;
+                case 9:
+                    showHighestandLowestRating();
+                    break;
+                    
         }
 
     }
@@ -77,6 +86,7 @@ public class FeedbackPortal{
             return; // Stop this method if there is no space left
         }
         // STEP 2: Ask for the customer's name and validate it
+        
         while (true) {
             System.out.println("Enter your name: ");
             name = sc.nextLine();
@@ -93,6 +103,7 @@ public class FeedbackPortal{
             System.out.println("Enter your rating (1-5): ");
             try {
                 rating = sc.nextInt();
+                sc.nextLine(); // Consume the newline character left by nextInt()
                 if (rating >= 1 && rating <= 5) { // Check that the rating is between 1 and 5
                     break; // The rating is valid
                 } else {
@@ -155,6 +166,7 @@ public class FeedbackPortal{
             return;
         }
         int searchRating;
+         
         while (true) {
             System.out.println("Enter the rating to search for (1-5): ");
             try {
@@ -184,6 +196,29 @@ public class FeedbackPortal{
             System.out.println("No feedback found with rating " + searchRating + ".");
         }
     }   
+
+    static void searchByName() {
+        if (feedbackCount == 0) {
+            System.out.println("No feedback available to search.");
+            return;
+        }
+        System.out.println("Enter the name to search for: ");
+        String searchName = sc.nextLine().trim(); // Remove leading and trailing spaces
+
+        boolean found = false; // In case no feedback is found with the given name
+        System.out.println("=====FEEDBACK FROM " + searchName + "=====");
+        for (int i = 0; i < feedbackCount; i++) {
+            if (names[i].equalsIgnoreCase(searchName)) { // Case-insensitive comparison so that e.g., "John" and "john" are treated the same
+                System.out.println("Rating: " + ratings[i]);
+                System.out.println("Comment: " + comments[i]);
+                System.out.println("-----------------------");
+                found = true; 
+            }
+        }
+        if (!found) {
+            System.out.println("No feedback found from " + searchName + ".");
+        }
+    }
 
     static void deleteFeedback(){
         if (feedbackCount == 0) {
@@ -217,8 +252,67 @@ public class FeedbackPortal{
         System.out.println("Feedback deleted successfully!");
     }
 
+    static void SaveFeedbackToFile() {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("feedback.txt"));
+            for (int i = 0; i < feedbackCount; i++) {
+                writer.write(names[i] + "|" + ratings[i] + "|" + comments[i]);
+                writer.newLine(); // Move to the next line for the next feedback
+            }
+            writer.close();
+            System.out.println("Feedback saved to file successfully!");
+        } catch (IOException e) {
+            System.out.println("An error occurred while saving feedback to file.");
+        }
+    }
+
+    static void showHighestandLowestRating() {
+        if (feedbackCount == 0) {
+            System.out.println("No feedback available to analyze.");
+            return;
+        }
+        int highestRating = ratings[0]; // assuming the first rating is the highest initially
+        int lowestRating = ratings[0];
+        
+        
+        for (int i = 1; i < feedbackCount; i++) {
+            if (ratings[i] > highestRating) {
+                highestRating = ratings[i];
+               
+            }
+            if (ratings[i] < lowestRating) {
+                lowestRating = ratings[i];
+                
+            }
+        }
+        System.out.println("Highest Rating: " + highestRating );
+        System.out.println("Lowest Rating: " + lowestRating );
+    }
+    static void LoadFeedbackFromFile() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("feedback.txt"));
+            String line;
+            while ((line = reader.readLine()) != null) { // read each line until the end of the file
+                String[] parts = line.split("\\|"); /* Split the line into parts using the '|' delimiter and escape it with double backslashes 
+                                                     then store it in an array*/
+                if (parts.length == 3) { // Ensure the line has all three parts
+                    names[feedbackCount] = parts[0]; // Store the name in the names array at the current feedbackCount index
+                    ratings[feedbackCount] = Integer.parseInt(parts[1]); 
+                    comments[feedbackCount] = parts[2];
+                    feedbackCount++; // Increment the count of feedbacks
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred while loading feedback from file.");
+        }
+    }
+
+
+
 
     public static void main (String [] args){
+        LoadFeedbackFromFile(); // Load saved feedback first
         while(exitFlag == false){
             showMenue();
         }
